@@ -1,0 +1,9 @@
+{
+  "urls": [
+    ["mpu6050/__init__.py", "github:bieli/mpu6050-micropython/mpu6050/__init__.py"],
+    ["mpu6050/mpu6050.py", "github:bieli/mpu6050-micropython/mpu6050/mpu6050.py"]
+  ],
+  "deps": [
+  ],
+  "version": "1.0"
+}
