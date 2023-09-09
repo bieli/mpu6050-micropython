@@ -13,16 +13,17 @@ from struct import unpack as unp
 from math import atan2, degrees, pi
 
 
+
 class I2CWrapper():
     pyb_version = True
     _timeout = 5000
     mpu_i2c = None
 
-    def __init__(self, machine, side=1, timeout=10):
+    def __init__(self, side=1, timeout=10):
         try:
-            import pyb as machine
+            import pyb
             self.pyb_version = True
-            self.mpu_i2c = machine.I2C(side, machine.I2C.MASTER)
+            self.mpu_i2c = pyb.I2C(side, pyb.I2C.MASTER)
         except ImportError:
             import machine
             self.pyb_version = False
@@ -44,6 +45,7 @@ class I2CWrapper():
         return result
 
 
+
 class MPU6050():
     '''
     Module for the MPY6050 6DOF IMU. 
@@ -60,7 +62,7 @@ class MPU6050():
         # create i2c object
         self._timeout = i2c_timeout
         self.disable_interrupts = False
-        self._mpu_i2c = I2CWrapper(machine, side, timeout=self._timeout)
+        self._mpu_i2c = I2CWrapper(side, timeout=self._timeout)
         self.chip_id = int(unp('>h', self._read(1, 0x75, self.MPU_ADDR))[0])
 
         # now apply user setting for interrupts
