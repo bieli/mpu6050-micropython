@@ -3,10 +3,45 @@ MPU6050 - is the MicroPython module for the InvenSense MPU6050 sensor IC.
 It measures acceleration, turn rate, in three axis.
 '''
 
-import machine
+try:
+    import pyb as machine
+except ImportError:
+    import machine
+
 import os
 from struct import unpack as unp
 from math import atan2, degrees, pi
+
+
+class I2CWrapper():
+    pyb_version = True
+    _timeout = 5000
+    mpu_i2c = None
+
+    def __init__(self, machine, side=1, timeout=10):
+        try:
+            import pyb as machine
+            self.pyb_version = True
+            self.mpu_i2c = machine.I2C(side, machine.I2C.MASTER)
+        except ImportError:
+            import machine
+            self.pyb_version = False
+            self.mpu_i2c = machine.I2C(side)
+        self._timeout = timeout
+
+    def mem_read(self, count, devaddr, memaddr):
+        if self.pyb_version:
+            result = self.mpu_i2c.mem_read(count, devaddr, memaddr, timeout=self._timeout)
+        else:
+            result = self.mpu_i2c.readfrom_mem(devaddr, memaddr, count)
+        return result
+
+    def mem_write(self, data, devaddr, memaddr):
+        if self.pyb_version:
+            result = self.mpu_i2c.mem_write(data, devaddr, memaddr, timeout=self._timeout)
+        else:
+            result = self.mpu_i2c.writeto_mem(devaddr, memaddr, data)
+        return result
 
 
 class MPU6050():
@@ -20,12 +55,12 @@ class MPU6050():
     MPU_ADDR = 0x68  # address of MPU6050
     _I2Cerror = "I2C communication failure"
     
-    def __init__(self, side=1, disable_interrupts=False):
+    def __init__(self, side=1, disable_interrupts=False, i2c_timeout=10):
 
         # create i2c object
-        self._timeout = 10
+        self._timeout = i2c_timeout
         self.disable_interrupts = False
-        self._mpu_i2c = machine.I2C(side, machine.I2C.MASTER)
+        self._mpu_i2c = I2CWrapper(machine, side, timeout=self._timeout)
         self.chip_id = int(unp('>h', self._read(1, 0x75, self.MPU_ADDR))[0])
 
         # now apply user setting for interrupts
@@ -47,10 +82,7 @@ class MPU6050():
         irq_state = True
         if self.disable_interrupts:
             irq_state = machine.disable_irq()
-        result = self._mpu_i2c.mem_read(count,
-                                        devaddr,
-                                        memaddr,
-                                        timeout=self._timeout)
+        result = self._mpu_i2c.mem_read(count, devaddr, memaddr)
         machine.enable_irq(irq_state)
         return result
 
@@ -62,10 +94,7 @@ class MPU6050():
         irq_state = True
         if self.disable_interrupts:
             irq_state = machine.disable_irq()
-        result = self._mpu_i2c.mem_write(data,
-                                         devaddr,
-                                         memaddr,
-                                         timeout=self._timeout)
+        result = self._mpu_i2c.mem_read(data, devaddr, memaddr)
         machine.enable_irq(irq_state)
         return result
 

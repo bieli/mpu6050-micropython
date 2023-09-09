@@ -12,6 +12,17 @@ It's usefull device in many IoT and IIoT cases.
 ```bash
 >>> import mip
 >>> mip.install("github:bieli/mpu6050-micropython")
+Installing github:bieli/mpu6050-micropython/package.json to /lib
+Copying: /lib/mpu6050/__init__.py
+Copying: /lib/mpu6050/mpu6050.py
+Done
+>>> ## you can check on device file system, if exists
+>>> import os
+>>> os.listdir("/lib/mpu6050")
+['__init__.py', 'mpu6050.py']
+>>> ## you can use MPU6050 library on device
+>>> from mpu6050 import mpu6050
+>>> imu = mpu6050.MPU6050(2, False)
 ```
 
 ## How to install from mpremote
