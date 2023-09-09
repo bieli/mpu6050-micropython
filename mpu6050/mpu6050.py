@@ -25,9 +25,9 @@ class I2CWrapper():
             self.pyb_version = True
             self.mpu_i2c = pyb.I2C(side, pyb.I2C.MASTER)
         except ImportError:
-            import machine
+            from machine import I2C
             self.pyb_version = False
-            self.mpu_i2c = machine.I2C(side)
+            self.mpu_i2c = I2C(side)
         self._timeout = timeout
 
     def mem_read(self, count, devaddr, memaddr):
