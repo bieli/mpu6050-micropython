@@ -22,7 +22,7 @@ Done
 ['__init__.py', 'mpu6050.py']
 >>> ## you can use MPU6050 library on device
 >>> from mpu6050 import mpu6050
->>> imu = mpu6050.MPU6050(2, False)
+>>> imu = mpu6050.MPU6050(1, False)
 ```
 
 ## How to install from mpremote
@@ -38,7 +38,7 @@ import machine
 
 from mpu6050 import MPU6050
 
-imu = MPU6050(2, False)
+imu = MPU6050(1, False)
 
 start = machine.micros()
 cangle = 90.0
@@ -55,5 +55,21 @@ whilte (<condition>):
     cangle = compf(cangle, angle, rate, machine.elapsed_micros(start), 0.91)
     start = machine.micros()
     # ...
+
+```
+
+## Known issues
+
+### Reason: Device is not connected or GND is not connected properly to device MPU6050
+
+```bash
+>>> from mpu6050 import mpu6050
+>>> imu = mpu6050.MPU6050(1, False)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/lib/mpu6050/mpu6050.py", line 66, in __init__
+  File "/lib/mpu6050/mpu6050.py", line 87, in _read
+  File "/lib/mpu6050/mpu6050.py", line 37, in mem_read
+OSError: [Errno 19] ENODEV
 
 ```
